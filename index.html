@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Javiera & Jorge</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#fff;overflow:hidden}
+#video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+#sound{position:fixed;bottom:35px;left:50%;transform:translateX(-50%);z-index:15;border:1px solid rgba(255,255,255,.8);border-radius:30px;padding:12px 22px;background:rgba(255,255,255,.85);color:#333;font-family:Georgia,serif;font-size:13px;cursor:pointer;backdrop-filter:blur(8px)}
+#intro{position:fixed;inset:0;z-index:9;background:#fff;opacity:1;pointer-events:none;transition:opacity .8s ease}
+#intro.off{opacity:0}
+#fade{position:fixed;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none;transition:opacity .8s ease}
+#fade.on{opacity:1}
+#fallback{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;border:0;background:rgba(255,255,255,.85);font-family:Georgia,serif;font-size:17px;cursor:pointer}
+</style>
+</head>
+<body>
+<video id="video" autoplay muted playsinline webkit-playsinline preload="auto">
+  <source src="sobre.mp4" type="video/mp4">
+</video>
+<button id="sound" type="button">♫ Activar sonido</button>
+<button id="fallback" type="button">Pulsa para reproducir</button>
+<div id="intro"></div>
+<div id="fade"></div>
+<script>
+const DESTINO = "invitacion.html";
+const v = document.getElementById("video");
+const sound = document.getElementById("sound");
+const fallback = document.getElementById("fallback");
+const fade = document.getElementById("fade");
+const intro = document.getElementById("intro");
+let entradaIniciada = false;
+function mostrarVideo(){
+  if (entradaIniciada) return;
+  entradaIniciada = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => intro.classList.add("off")));
+}
+let arrancado = false;
+let intentando = false;
+let terminado = false;
+
+v.defaultMuted = true;
+v.muted = true;
+v.setAttribute("muted", "");
+v.playsInline = true;
+
+async function iniciar(){
+  if (arrancado || intentando || terminado) return;
+  intentando = true;
+  try {
+    v.muted = true;
+    await v.play();
+    arrancado = true;
+    fallback.style.display = "none";
+    sound.style.display = "block";
+  } catch (e) {
+    // Si todavía está cargando, esperamos a canplay para reintentarlo.
+    if (v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      fallback.style.display = "flex";
+      sound.style.display = "none";
+    }
+  } finally {
+    intentando = false;
+  }
+}
+
+v.addEventListener("playing", () => {
+  arrancado = true;
+  mostrarVideo();
+  fallback.style.display = "none";
+  sound.style.display = v.muted ? "block" : "none";
+});
+v.addEventListener("canplay", iniciar, {once:true});
+window.addEventListener("load", iniciar);
+
+fallback.addEventListener("click", async () => {
+  try {
+    v.muted = true;
+    await v.play();
+    fallback.style.display = "none";
+  } catch(e) {
+    fallback.style.display = "flex";
+  }
+});
+sound.addEventListener("click", () => {
+  v.muted = false;
+  v.volume = 1;
+  sound.style.display = "none";
+});
+v.addEventListener("ended", () => {
+  if (terminado) return;
+  terminado = true;
+  sound.style.display = "none";
+  fallback.style.display = "none";
+  fade.classList.add("on");
+  setTimeout(() => window.location.replace(DESTINO), 820);
+});
+</script>
+</body>
+</html>

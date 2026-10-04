@@ -17,18 +17,13 @@ html,body{
   overflow:hidden;
 }
 
-#video,#poster{
+#video{
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
   background:#fff;
-}
-
-#poster{
-  z-index:5;
-  pointer-events:none;
 }
 
 #sound{
@@ -68,7 +63,7 @@ html,body{
   align-items:center;
   justify-content:center;
   border:0;
-  background:transparent;
+  background:rgba(255,255,255,.85);
   font-family:Georgia,serif;
   font-size:17px;
   cursor:pointer;
@@ -81,8 +76,6 @@ html,body{
 <video id="video" autoplay muted playsinline preload="auto">
   <source src="sobre.mp4" type="video/mp4">
 </video>
-
-<img id="poster" src="portada.png" alt="Javiera y Jorge">
 
 <button id="sound" type="button">
   ♫ Activar sonido
@@ -98,7 +91,6 @@ html,body{
 const DESTINO = "https://javierayjorge.my.canva.site/invitacion-boda";
 
 const v = document.getElementById("video");
-const poster = document.getElementById("poster");
 const sound = document.getElementById("sound");
 const fallback = document.getElementById("fallback");
 const fade = document.getElementById("fade");
@@ -106,10 +98,10 @@ const fade = document.getElementById("fade");
 async function iniciar(){
   try{
     await v.play();
-    poster.style.display="none";
     fallback.style.display="none";
   }catch(e){
     fallback.style.display="flex";
+    sound.style.display="none";
   }
 }
 
@@ -119,7 +111,6 @@ fallback.addEventListener("click",async()=>{
   try{
     v.muted=false;
     await v.play();
-    poster.style.display="none";
     fallback.style.display="none";
     sound.style.display="none";
   }catch(e){

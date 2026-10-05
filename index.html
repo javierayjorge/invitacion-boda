@@ -7,30 +7,29 @@
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#fff;overflow:hidden}
-#video{position:fixed;inset:0;z-index:2;width:100%;height:100%;object-fit:cover;background:#fff;transition:opacity .8s ease}
-#video.off{opacity:0}
-#invite{position:fixed;inset:0;z-index:1;width:100%;height:100%;border:0;background:#fff}
+#video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
 #sound{position:fixed;bottom:35px;left:50%;transform:translateX(-50%);z-index:15;border:1px solid rgba(255,255,255,.8);border-radius:30px;padding:12px 22px;background:rgba(255,255,255,.85);color:#333;font-family:Georgia,serif;font-size:13px;cursor:pointer;backdrop-filter:blur(8px)}
 #intro{position:fixed;inset:0;z-index:9;background:#fff;opacity:1;pointer-events:none;transition:opacity .8s ease}
 #intro.off{opacity:0}
-#fade{position:fixed;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none;transition:opacity .8s ease}
+#fade{position:fixed;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none;transition:opacity .45s ease}
 #fade.on{opacity:1}
 #fallback{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;border:0;background:rgba(255,255,255,.85);font-family:Georgia,serif;font-size:17px;cursor:pointer}
 </style>
 </head>
 <body>
-<iframe id="invite" src="invitacion.html" title="Invitación"></iframe>
 <video id="video" autoplay muted playsinline webkit-playsinline preload="auto">
   <source src="sobre.mp4" type="video/mp4">
 </video>
 <button id="sound" type="button">♫ Activar sonido</button>
 <button id="fallback" type="button">Pulsa para reproducir</button>
 <div id="intro"></div>
+<div id="fade"></div>
 <script>
 const DESTINO = "invitacion.html";
 const v = document.getElementById("video");
 const sound = document.getElementById("sound");
 const fallback = document.getElementById("fallback");
+const fade = document.getElementById("fade");
 const intro = document.getElementById("intro");
 let entradaIniciada = false;
 function mostrarVideo(){
@@ -95,14 +94,8 @@ v.addEventListener("ended", () => {
   terminado = true;
   sound.style.display = "none";
   fallback.style.display = "none";
-
-  // La invitación ya está cargada detrás del vídeo.
-  // Desvanecemos el vídeo y la descubrimos sin cambiar de página.
-  v.classList.add("off");
-
-  setTimeout(() => {
-    v.style.display = "none";
-  }, 820);
+  fade.classList.add("on");
+  setTimeout(() => window.location.replace(DESTINO), 470);
 });
 </script>
 </body>
